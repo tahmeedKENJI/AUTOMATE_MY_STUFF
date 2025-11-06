@@ -59,15 +59,19 @@ uvm_test_init:
 	@mkdir -p test/uvm/${TESTNAME}/objects
 
 uvm_seq_init:
+	@mkdir -p test/uvm/${TESTNAME}/sequences/${SEQUENCE}
 	@touch test/uvm/${TESTNAME}/sequences/${SEQUENCE}/${SEQUENCE}.sv
 
 uvm_seq_item_init:
+	@mkdir -p test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}
 	@touch test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}/${SEQ_ITEM}.sv
 
 uvm_inheritor_init:
+	@mkdir -p test/uvm/${TESTNAME}/inheritors/${INHERITOR}
 	@touch test/uvm/${TESTNAME}/inheritors/${INHERITOR}/${INHERITOR}.sv
 
 uvm_object_init:
+	@mkdir -p test/uvm/${TESTNAME}/objects/${OBJECT}
 	@touch test/uvm/${TESTNAME}/objects/${OBJECT}/${OBJECT}.sv
 
 clean_uvm_test:
