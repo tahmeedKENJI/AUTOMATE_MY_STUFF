@@ -10,6 +10,7 @@ SRC      := ${ROOT_D}/src
 SUB      := ${ROOT_D}/sub
 INC      := ${ROOT_D}/include
 INF      := ${ROOT_D}/interface
+SCT      := ${ROOT_D}/scripts
 TBD      := ${ROOT_D}/test/tb
 UVM      := ${ROOT_D}/test/uvm
 
@@ -34,6 +35,8 @@ init:
 	@echo "\033[7;32m//// INITIALIZING WORKSPACE... ///\033[0m"
 	@mkdir -p src
 	@mkdir -p include
+	@touch include/dependencies.svh
+	@mkdir -p scripts
 	@mkdir -p interface
 	@mkdir -p test/uvm
 	@touch test/uvm/uvm_top.sv
@@ -65,6 +68,7 @@ uvm_seq_init:
 uvm_seq_item_init:
 	@mkdir -p test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}
 	@touch test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}/${SEQ_ITEM}.sv
+	@python3 scripts/uvm_gen_seq_item.py ${ROOT_D}/test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}/${SEQ_ITEM}.sv ${SEQ_ITEM}
 
 uvm_inheritor_init:
 	@mkdir -p test/uvm/${TESTNAME}/inheritors/${INHERITOR}
@@ -84,6 +88,7 @@ deinit: clean
 	@rm -rf include
 	@rm -rf interface
 	@rm -rf test
+	@rm -rf scripts
 	@rm -rf flist.f
 	@rm -rf log.debug
 	@rm -rf *.sh
