@@ -33,7 +33,6 @@ endif
 init:
 	@echo "\033[7;32m//// INITIALIZING WORKSPACE... ///\033[0m"
 	@mkdir -p src
-	@mkdir -p sub
 	@mkdir -p include
 	@mkdir -p interface
 	@mkdir -p test/uvm
@@ -78,7 +77,6 @@ clean_uvm_test:
 deinit: clean
 	@echo "\033[7;31m//// NUKING WORKSPACE... ///\033[0m"
 	@rm -rf src
-	@rm -rf sub
 	@rm -rf include
 	@rm -rf interface
 	@rm -rf test
