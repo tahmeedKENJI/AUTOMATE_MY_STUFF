@@ -151,7 +151,6 @@ clean:
 	@echo "\033[7;31m//// PERFORMING CLEAN-UP... ///\033[0m"
 	@rm -rf build
 	@rm -rf log.debug
-	@rm -rf flist.f
 
 build: 
 	@mkdir -p build
@@ -180,5 +179,5 @@ gsim:
 	@echo ""                                    | tee -a log.debug
 	@cd build; xsim ${TOP} ${TESTPLUSARG} --gui | tee -a ../log.debug
 
-run_sim: clean flist build xvlog xelab xsim
-run_gui: clean flist build xvlog xelab gsim
+run_sim: clean build xvlog xelab xsim
+run_gui: clean build xvlog xelab gsim
