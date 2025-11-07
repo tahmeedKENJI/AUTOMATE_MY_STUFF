@@ -36,10 +36,12 @@ init:
 	@mkdir -p src
 	@mkdir -p include
 	@touch include/dependencies.svh
+	@python3 scripts/gen_dependencies_header.py include/dependencies.svh
 	@mkdir -p scripts
 	@mkdir -p interface
 	@mkdir -p test/uvm
 	@touch test/uvm/uvm_top.sv
+	@python3 scripts/gen_uvm_top.py test/uvm/uvm_top.sv
 	@mkdir -p test/tb
 	@touch test/tb/tb_top.sv
 	@touch flist.f
@@ -49,13 +51,28 @@ uvm_test_init:
 	@echo "\033[7;32m//// INITIALIZING UVM TEST: ${TESTNAME}... ///\033[0m"
 	@mkdir -p test/uvm/${TESTNAME}
 	@touch test/uvm/${TESTNAME}/${TESTNAME}.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/${TESTNAME}.sv ${TESTNAME} uvm_test
+
 	@mkdir -p test/uvm/${TESTNAME}/components
+
 	@touch test/uvm/${TESTNAME}/components/driver.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/components/driver.sv driver uvm_driver
+
 	@touch test/uvm/${TESTNAME}/components/monitor.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/components/monitor.sv monitor uvm_monitor
+
 	@touch test/uvm/${TESTNAME}/components/sequencer.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/components/sequencer.sv sequencer uvm_sequencer
+
 	@touch test/uvm/${TESTNAME}/components/scoreboard.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/components/scoreboard.sv scoreboard uvm_scoreboard
+
 	@touch test/uvm/${TESTNAME}/components/agent.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/components/agent.sv agent uvm_agent
+
 	@touch test/uvm/${TESTNAME}/components/env.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/${TESTNAME}/components/env.sv env uvm_env
+
 	@mkdir -p test/uvm/${TESTNAME}/inheritors
 	@mkdir -p test/uvm/${TESTNAME}/sequences
 	@mkdir -p test/uvm/${TESTNAME}/seq_items
@@ -64,19 +81,22 @@ uvm_test_init:
 uvm_seq_init:
 	@mkdir -p test/uvm/${TESTNAME}/sequences/${SEQUENCE}
 	@touch test/uvm/${TESTNAME}/sequences/${SEQUENCE}/${SEQUENCE}.sv
+	@python3 scripts/uvm_gen_sequence.py test/uvm/${TESTNAME}/sequences/${SEQUENCE}/${SEQUENCE}.sv ${SEQUENCE}
 
 uvm_seq_item_init:
 	@mkdir -p test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}
 	@touch test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}/${SEQ_ITEM}.sv
-	@python3 scripts/uvm_gen_seq_item.py ${ROOT_D}/test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}/${SEQ_ITEM}.sv ${SEQ_ITEM}
+	@python3 scripts/uvm_gen_seq_item.py test/uvm/${TESTNAME}/seq_items/${SEQ_ITEM}/${SEQ_ITEM}.sv ${SEQ_ITEM}
 
 uvm_inheritor_init:
 	@mkdir -p test/uvm/${TESTNAME}/inheritors/${INHERITOR}
 	@touch test/uvm/${TESTNAME}/inheritors/${INHERITOR}/${INHERITOR}.sv
+	@python3 scripts/uvm_gen_inheritor.py test/uvm/${TESTNAME}/inheritors/${INHERITOR}/${INHERITOR}.sv ${INHERITOR} ${TESTNAME}
 
 uvm_object_init:
 	@mkdir -p test/uvm/${TESTNAME}/objects/${OBJECT}
 	@touch test/uvm/${TESTNAME}/objects/${OBJECT}/${OBJECT}.sv
+	@python3 scripts/uvm_gen_object.py test/uvm/${TESTNAME}/objects/${OBJECT}/${OBJECT}.sv ${OBJECT}
 
 clean_uvm_test:
 	@echo "\033[7;31m//// REMOVING UVM TEST: ${TESTNAME}... ///\033[0m"

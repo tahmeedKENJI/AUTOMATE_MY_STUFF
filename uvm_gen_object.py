@@ -6,7 +6,7 @@ if len(sys.argv) < 2:
 
 file_path = sys.argv[1]
 class_name = sys.argv[2]
-base_class = "uvm_sequence_item"
+base_class = "uvm_object"
 
 os.makedirs(os.path.dirname(file_path), exist_ok=True)
 

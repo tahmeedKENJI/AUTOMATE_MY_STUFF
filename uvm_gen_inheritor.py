@@ -6,7 +6,7 @@ if len(sys.argv) < 2:
 
 file_path = sys.argv[1]
 class_name = sys.argv[2]
-base_class = "uvm_sequence_item"
+base_class = sys.argv[3]
 
 os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
@@ -15,10 +15,10 @@ content = f"""\
 
 class {class_name} extends {base_class};
 
-    `uvm_object_utils({class_name})
+    `uvm_component_utils({class_name})
 
-    function new(string name="{class_name}");
-        super.new(name);
+    function new(string name="{class_name}", uvm_component parent=null);
+        super.new(name, parent);
     endfunction
     
 endclass
