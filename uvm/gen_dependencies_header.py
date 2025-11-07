@@ -1,7 +1,7 @@
 import sys
 import os
 
-if sys.argv < 1:
+if len(sys.argv) < 1:
     sys.exit(1)
 
 file_path = sys.argv[1]
