@@ -42,7 +42,7 @@ init:
 	@mkdir -p test/uvm
 	@touch test/uvm/uvm_top.sv
 	@python3 scripts/gen_uvm_top.py test/uvm/uvm_top.sv
-	@mkdir -p test/uvm/basetests
+	@mkdir -p test/uvm/testcases
 	@mkdir -p test/uvm/components
 	@mkdir -p test/uvm/inheritors
 	@mkdir -p test/uvm/sequences
@@ -54,8 +54,8 @@ init:
 	@touch log.debug
 
 uvm_test_init:
-	@touch test/uvm/basetests/${TESTNAME}.sv
-	@python3 scripts/uvm_gen_component.py test/uvm/basetests/${TESTNAME}.sv ${TESTNAME} uvm_test
+	@touch test/uvm/testcases/${TESTNAME}.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/testcases/${TESTNAME}.sv ${TESTNAME} uvm_test
 
 uvm_component_init:
 	@mkdir -p test/uvm/components/${COMPONENT}
