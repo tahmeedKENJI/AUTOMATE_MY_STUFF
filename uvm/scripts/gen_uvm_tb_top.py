@@ -11,7 +11,7 @@ os.makedirs(os.path.dirname(file_path), exist_ok=True)
 content = f"""\
 `include "dependencies.svh"
 
-module uvm_top;
+module uvm_tb_top;
 
     logic clk, rst_n;
 

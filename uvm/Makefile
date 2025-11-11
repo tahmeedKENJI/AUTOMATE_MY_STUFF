@@ -25,7 +25,7 @@ TESTPLUSARG := --testplusarg UVM_VERBOSITY=UVM_HIGH
 TESTPLUSARG += --testplusarg TESTNAME=${TESTNAME}
 
 ifeq (${TESTTYPE}, UVM)
-	TOP := uvm_top
+	TOP := uvm_tb_top
 endif
 
 ####
@@ -40,8 +40,8 @@ init:
 	@python3 scripts/gen_dependencies_header.py include/dependencies.svhi
 	@mkdir -p interface
 	@mkdir -p test/uvm
-	@touch test/uvm/uvm_top.sv
-	@python3 scripts/gen_uvm_top.py test/uvm/uvm_top.sv
+	@touch test/uvm/uvm_tb_top.sv
+	@python3 scripts/gen_uvm_tb_top.py test/uvm/uvm_tb_top.sv
 	@mkdir -p test/uvm/testcases
 	@mkdir -p test/uvm/components
 	@mkdir -p test/uvm/inheritors
@@ -130,7 +130,7 @@ flist:
 	@find ${UVM} -type f -name "*agent.sv"      >> ${FST}
 	@find ${UVM} -type f -name "*env.sv"        >> ${FST}
 	@find ${UVM} -type f -name "*test.sv"       >> ${FST}
-	@find ${UVM} -type f -name "uvm_top.sv"     >> ${FST}
+	@find ${UVM} -type f -name "uvm_tb_top.sv"     >> ${FST}
 
 ####
 # OPERATION THEATRE
