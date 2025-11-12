@@ -7,6 +7,7 @@
 
 ROOT_D   := ${shell realpath .}
 SRC      := ${ROOT_D}/src
+SUB      := ${ROOT_D}/sub
 INC      := ${ROOT_D}/include
 INF      := ${ROOT_D}/interface
 SCT      := ${ROOT_D}/scripts
@@ -37,12 +38,14 @@ init:
 	@mkdir -p src
 	@mkdir -p include
 	@touch include/dependencies.svh
-	@python3 scripts/gen_dependencies_header.py include/dependencies.svhi
+	@python3 scripts/gen_dependencies_header.py include/dependencies.svh
 	@mkdir -p interface
 	@mkdir -p test/uvm
 	@touch test/uvm/uvm_tb_top.sv
 	@python3 scripts/gen_uvm_tb_top.py test/uvm/uvm_tb_top.sv
 	@mkdir -p test/uvm/testcases
+	@mkdir -p test/uvm/environments
+	@mkdir -p test/uvm/scoreboards
 	@mkdir -p test/uvm/components
 	@mkdir -p test/uvm/inheritors
 	@mkdir -p test/uvm/sequences
@@ -57,6 +60,14 @@ uvm_test_init:
 	@touch test/uvm/testcases/${TESTNAME}.sv
 	@python3 scripts/uvm_gen_component.py test/uvm/testcases/${TESTNAME}.sv ${TESTNAME} uvm_test
 
+uvm_scoreboard_init:
+	@touch test/uvm/scoreboards/${SCOREBOARD}_scoreboard.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/scoreboards/${SCOREBOARD}_scoreboard.sv ${SCOREBOARD}_scoreboard uvm_scoreboard
+
+uvm_env_init:
+	@touch test/uvm/environments/${ENV}_env.sv
+	@python3 scripts/uvm_gen_component.py test/uvm/environments/${ENV}_env.sv ${ENV}_env uvm_env
+
 uvm_component_init:
 	@mkdir -p test/uvm/components/${COMPONENT}
 
@@ -69,14 +80,8 @@ uvm_component_init:
 	@touch test/uvm/components/${COMPONENT}/${COMPONENT}_sequencer.sv
 	@python3 scripts/uvm_gen_component.py test/uvm/components/${COMPONENT}/${COMPONENT}_sequencer.sv ${COMPONENT}_sequencer uvm_sequencer
 
-	@touch test/uvm/components/${COMPONENT}/${COMPONENT}_scoreboard.sv
-	@python3 scripts/uvm_gen_component.py test/uvm/components/${COMPONENT}/${COMPONENT}_scoreboard.sv ${COMPONENT}_scoreboard uvm_scoreboard
-
 	@touch test/uvm/components/${COMPONENT}/${COMPONENT}_agent.sv
 	@python3 scripts/uvm_gen_component.py test/uvm/components/${COMPONENT}/${COMPONENT}_agent.sv ${COMPONENT}_agent uvm_agent
-
-	@touch test/uvm/components/${COMPONENT}/${COMPONENT}_env.sv
-	@python3 scripts/uvm_gen_component.py test/uvm/components/${COMPONENT}/${COMPONENT}_env.sv ${COMPONENT}_env uvm_env
 
 uvm_seq_init:
 	@touch test/uvm/sequences/${SEQUENCE}.sv
@@ -113,15 +118,18 @@ flist:
 	@touch ${FST}
 	@echo "-i ${INC}"                                                                         >> ${FST}
 	@find ${INF} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
+	@find ${SUB} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
 	@find ${SRC} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
 	@find ${TBD} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
 	@find ${UVM} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
 
 	@find ${INF} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
+	@find ${SUB} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
 	@find ${SRC} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
 	@find ${TBD} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
 
 	@find ${UVM} -type f -name "*seq_item.sv"   >> ${FST}
+	@find ${UVM} -type f -name "*object.sv"   >> ${FST}
 	@find ${UVM} -type f -name "*sequence.sv"   >> ${FST}
 	@find ${UVM} -type f -name "*driver.sv"     >> ${FST}
 	@find ${UVM} -type f -name "*monitor.sv"    >> ${FST}
