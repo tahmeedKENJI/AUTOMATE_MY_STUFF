@@ -86,6 +86,8 @@ class {class_name} extends {base_class};
         super.new(name, parent);
     endfunction
 
+    `uvm_analysis_imp_decl()
+
     uvm_analysis_imp #(, {class_name}) m_analysis_imp;
 
     virtual function void build_phase(uvm_phase phase);
