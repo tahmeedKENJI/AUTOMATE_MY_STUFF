@@ -22,8 +22,11 @@ TOP         := tb_top
 
 DEFINITION  := -L uvm
 
-TESTPLUSARG := --testplusarg UVM_VERBOSITY=UVM_HIGH
+UVM_VERBOSITY ?= UVM_LOW
+
+TESTPLUSARG := --testplusarg UVM_VERBOSITY=${UVM_VERBOSITY}
 TESTPLUSARG += --testplusarg TESTNAME=${TESTNAME}
+TESTPLUSARG += --testplusarg CLKFREQMHZ=${CLKFREQMHZ}
 
 RUNTYPE     ?= --runall
 GUI         ?= 0

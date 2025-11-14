@@ -29,11 +29,19 @@ module uvm_tb_top;
     endtask
 
     initial begin
-        string testname = "base_test";
-        $value$plusargs("TESTNAME=%s", testname);
+        string testname;
+        int clk_freq_MHz;
+        
+        string def_testname;
+        int def_clk_freq_MHz;
+
+        if (!$value$plusargs("TESTNAME=%s", testname)) testname = def_testname;
+        if (!$value$plusargs("CLKFREQMHZ=%d", clk_freq_MHz)) clk_freq_MHz = def_clk_freq_MHz;
+        `uvm_info("TOP", $sformatf("\nSYS_CLK: %0d MHz\nTEST_NAME: %s\n", clk_freq_MHz, testname), UVM_HIGH)
+
         // uvm_config_db #()::set(null, "*", " ", );
 
-        // start_clk(); // Specify Clock Speed
+        start_clk(clk_freq_MHz); // Specify Clock Speed
 
         run_test(testname);
     end
