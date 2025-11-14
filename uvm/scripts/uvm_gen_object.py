@@ -6,20 +6,13 @@ if len(sys.argv) < 2:
 
 file_path = sys.argv[1]
 class_name = sys.argv[2]
-base_class = "uvm_object"
 
 os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
 content = f"""\
 `include "dependencies.svh"
 
-class {class_name} extends {base_class};
-
-    `uvm_object_utils({class_name})
-
-    function new(string name="{class_name}");
-        super.new(name);
-    endfunction
+class {class_name};
     
 endclass
 

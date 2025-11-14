@@ -6,13 +6,13 @@
 
 
 ROOT_D   := ${shell realpath .}
+INC      := ${ROOT_D}/include
+PKG      := ${ROOT_D}/package
 SRC      := ${ROOT_D}/src
 SUB      := ${ROOT_D}/sub
-INC      := ${ROOT_D}/include
-INF      := ${ROOT_D}/interface
-SCT      := ${ROOT_D}/scripts
 TBD      := ${ROOT_D}/test/tb
 UVM      := ${ROOT_D}/test/uvm
+SCT      := ${ROOT_D}/scripts
 
 FST      := ${ROOT_D}/flist.f
 LOG      := ${ROOT_D}/log.debug
@@ -25,6 +25,13 @@ DEFINITION  := -L uvm
 TESTPLUSARG := --testplusarg UVM_VERBOSITY=UVM_HIGH
 TESTPLUSARG += --testplusarg TESTNAME=${TESTNAME}
 
+RUNTYPE     ?= --runall
+GUI         ?= 0
+
+ifeq (${GUI}, 1)
+	RUNTYPE := --gui
+endif
+
 ifeq (${TESTTYPE}, UVM)
 	TOP := uvm_tb_top
 endif
@@ -36,29 +43,34 @@ endif
 init:
 	@echo "\033[7;32m//// INITIALIZING WORKSPACE... ///\033[0m"
 	@mkdir -p src
+	@mkdir -p package
+
 	@mkdir -p include
 	@touch include/dependencies.svh
 	@python3 scripts/gen_dependencies_header.py include/dependencies.svh
-	@mkdir -p interface
+
 	@mkdir -p test/uvm
 	@touch test/uvm/uvm_tb_top.sv
 	@python3 scripts/gen_uvm_tb_top.py test/uvm/uvm_tb_top.sv
+
 	@mkdir -p test/uvm/testcases
 	@mkdir -p test/uvm/environments
 	@mkdir -p test/uvm/scoreboards
 	@mkdir -p test/uvm/components
-	@mkdir -p test/uvm/inheritors
 	@mkdir -p test/uvm/sequences
 	@mkdir -p test/uvm/seq_items
 	@mkdir -p test/uvm/objects
+	@mkdir -p test/uvm/interfaces
+
 	@mkdir -p test/tb
 	@touch test/tb/tb_top.sv
+
 	@touch flist.f
 	@touch log.debug
 
 uvm_test_init:
 	@touch test/uvm/testcases/${TESTNAME}.sv
-	@python3 scripts/uvm_gen_component.py test/uvm/testcases/${TESTNAME}.sv ${TESTNAME} uvm_test
+	@python3 scripts/uvm_gen_component.py test/uvm/testcases/${TESTNAME}_test.sv ${TESTNAME}_test uvm_test
 
 uvm_scoreboard_init:
 	@touch test/uvm/scoreboards/${SCOREBOARD}_scoreboard.sv
@@ -85,15 +97,15 @@ uvm_component_init:
 
 uvm_seq_init:
 	@touch test/uvm/sequences/${SEQUENCE}.sv
-	@python3 scripts/uvm_gen_sequence.py test/uvm/sequences/${SEQUENCE}.sv ${SEQUENCE}
+	@python3 scripts/uvm_gen_sequence.py test/uvm/sequences/${SEQUENCE}_sequence.sv ${SEQUENCE}_sequence
 
 uvm_seq_item_init:
 	@touch test/uvm/seq_items/${SEQ_ITEM}.sv
-	@python3 scripts/uvm_gen_seq_item.py test/uvm/seq_items/${SEQ_ITEM}.sv ${SEQ_ITEM}
+	@python3 scripts/uvm_gen_seq_item.py test/uvm/seq_items/${SEQ_ITEM}_seq_item.sv ${SEQ_ITEM}_seq_item
 
-uvm_inheritor_init:
-	@touch test/uvm/inheritors/${INHERITOR}.sv
-	@python3 scripts/uvm_gen_inheritor.py test/uvm/inheritors/${INHERITOR}.sv ${INHERITOR} ${TESTNAME}
+uvm_interface_init:
+	@touch test/uvm/interfaces/${INTERFACE}.sv
+	@python3 scripts/uvm_gen_interface.py test/uvm/interfaces/${INTERFACE}.sv ${INTERFACE}
 
 uvm_object_init:
 	@touch test/uvm/objects/${OBJECT}.sv
@@ -103,7 +115,7 @@ deinit: clean
 	@echo "\033[7;31m//// NUKING WORKSPACE... ///\033[0m"
 	@rm -rf src
 	@rm -rf include
-	@rm -rf interface
+	@rm -rf package
 	@rm -rf test
 	@rm -rf flist.f
 	@rm -rf log.debug
@@ -116,29 +128,22 @@ deinit: clean
 flist:
 	@rm -rf ${FST}
 	@touch ${FST}
-	@echo "-i ${INC}"                                                                         >> ${FST}
-	@find ${INF} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
-	@find ${SUB} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
-	@find ${SRC} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
-	@find ${TBD} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
-	@find ${UVM} -type f \( -name "*pkg.sv" -o -name "*pkg.v" \)                              >> ${FST}
+	@echo "-i ${INC}"                                      >> ${FST}
+	
+	@find ${PKG} -type f \( -name "*.sv" -o -name "*.v" \) >> ${FST}
+	@find ${SUB} -type f \( -name "*.sv" -o -name "*.v" \) >> ${FST}
+	@find ${SRC} -type f \( -name "*.sv" -o -name "*.v" \) >> ${FST}
+	@find ${TBD} -type f \( -name "*.sv" -o -name "*.v" \) >> ${FST}
 
-	@find ${INF} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
-	@find ${SUB} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
-	@find ${SRC} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
-	@find ${TBD} -type f \( -name "*.sv" -o -name "*.v" \) ! -name "*pkg.sv" ! -name "*pkg.v" >> ${FST}
-
-	@find ${UVM} -type f -name "*seq_item.sv"   >> ${FST}
-	@find ${UVM} -type f -name "*object.sv"   >> ${FST}
-	@find ${UVM} -type f -name "*sequence.sv"   >> ${FST}
-	@find ${UVM} -type f -name "*driver.sv"     >> ${FST}
-	@find ${UVM} -type f -name "*monitor.sv"    >> ${FST}
-	@find ${UVM} -type f -name "*sequencer.sv"  >> ${FST}
-	@find ${UVM} -type f -name "*scoreboard.sv" >> ${FST}
-	@find ${UVM} -type f -name "*agent.sv"      >> ${FST}
-	@find ${UVM} -type f -name "*env.sv"        >> ${FST}
-	@find ${UVM} -type f -name "*test.sv"       >> ${FST}
-	@find ${UVM} -type f -name "uvm_tb_top.sv"     >> ${FST}
+	@find ${UVM}/interfaces   	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/seq_items    	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/objects      	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/sequences    	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/components   	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/scoreboards  	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/environments 	-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/testcases 		-type f -name "*.sv" 	>> ${FST}
+	@find ${UVM}/top       		-type f -name "*.sv" 	>> ${FST}
 
 ####
 # OPERATION THEATRE
@@ -165,16 +170,9 @@ xelab:
 	@cd build; xelab ${TOP} -s ${TOP} -timescale 1ns/1ps -debug typical | tee -a ../log.debug
 
 xsim:
-	@echo ""                                       | tee -a log.debug
-	@echo "//// SIMULATION STAGE ////"             | tee -a log.debug
-	@echo ""                                       | tee -a log.debug
-	@cd build; xsim ${TOP} ${TESTPLUSARG} --runall | tee -a ../log.debug
+	@echo ""                                         | tee -a log.debug
+	@echo "//// SIMULATION STAGE ////"               | tee -a log.debug
+	@echo ""                                         | tee -a log.debug
+	@cd build; xsim ${TOP} ${TESTPLUSARG} ${RUNTYPE} | tee -a ../log.debug
 
-gsim:
-	@echo ""                                    | tee -a log.debug
-	@echo "//// SIMULATION STAGE ////"          | tee -a log.debug
-	@echo ""                                    | tee -a log.debug
-	@cd build; xsim ${TOP} ${TESTPLUSARG} --gui | tee -a ../log.debug
-
-run_sim: clean build xvlog xelab xsim
-run_gui: clean build xvlog xelab gsim
+run: clean build xvlog xelab xsim
