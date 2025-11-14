@@ -72,7 +72,7 @@ init:
 	@touch log.debug
 
 uvm_test_init:
-	@touch test/uvm/testcases/${TESTNAME}.sv
+	@touch test/uvm/testcases/${TESTNAME}_test.sv
 	@python3 scripts/uvm_gen_component.py test/uvm/testcases/${TESTNAME}_test.sv ${TESTNAME}_test uvm_test
 
 uvm_scoreboard_init:
@@ -99,11 +99,11 @@ uvm_component_init:
 	@python3 scripts/uvm_gen_component.py test/uvm/components/${COMPONENT}/${COMPONENT}_agent.sv ${COMPONENT}_agent uvm_agent
 
 uvm_seq_init:
-	@touch test/uvm/sequences/${SEQUENCE}.sv
+	@touch test/uvm/sequences/${SEQUENCE}_sequence.sv
 	@python3 scripts/uvm_gen_sequence.py test/uvm/sequences/${SEQUENCE}_sequence.sv ${SEQUENCE}_sequence
 
 uvm_seq_item_init:
-	@touch test/uvm/seq_items/${SEQ_ITEM}.sv
+	@touch test/uvm/seq_items/${SEQ_ITEM}_seq_item.sv
 	@python3 scripts/uvm_gen_seq_item.py test/uvm/seq_items/${SEQ_ITEM}_seq_item.sv ${SEQ_ITEM}_seq_item
 
 uvm_interface_init:
